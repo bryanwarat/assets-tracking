@@ -17,147 +17,38 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TicketController extends Controller
 {
-    public function index(Request $request)
-    {
-        $tickets = DB::table('tickets')
-        ->leftJoin('users', 'tickets.user_id', 'users.id')
-        ->select('tickets.id as ticket_id', 'tickets.*', 'users.name')
-        ->get();
 
-        if ($request->ajax()) {
-            $data = $tickets;
-            return DataTables::of($data)
-                    ->addIndexColumn()
-                    ->make(true);
-        }
-
-        return view('pages.assignment.ticket.index');
-    }
-
-    public function ticketDetail(Request $request, $id)
-    {
-        $ticketId = $request->id;
-
-        $ticketDetails = DB::table('tickets')
-                            ->leftJoin('users', 'tickets.user_id', 'users.id')
-                            ->where('tickets.id', $ticketId)
-                            ->select('tickets.*', 'tickets.id as ticket_id', 'tickets.created_at as request_date', 'users.*')
-                            ->first();
-
-        $ticketItems = DB::table('tickets')
-                            ->join('ticket_items', 'tickets.id', 'ticket_items.ticket_id')
-                            ->join('assets', 'ticket_items.asset_id', 'assets.id')
-                            ->where('tickets.id', $ticketId)
-                            ->select('ticket_items.*', 'assets.*')
-                            ->get();
-
-        echo "
-        <input type='text' id='ticketIdDetail' value='$ticketDetails->ticket_id' hidden>
-
-        <div class='table-responsive'>
-            <table class='table card-table' style='border-color: #fff'>
-                <tbody>
-
-                    <tr>
-                        <td style='width: 25%'>Status</td>
-                        <td>:
-                        ";
-                        if ($ticketDetails->status == 0) {
-                            echo '<span class="badge bg-orange-lt">Waiting Approval</span>';
-                        } else if ($ticketDetails->status == 1) {
-                            echo '<span class="badge bg-green-lt">Approved</span>' . ' on ' . $ticketDetails->action_date;
-                        } else if ($ticketDetails->status == 2) {
-                            echo '<span class="badge bg-red-lt">Rejected</span>' . ' on ' . $ticketDetails->action_date;
-                        } else {
-                            echo '<span class="badge bg-pink-lt">Expired</span>';
-                        }
-                        echo "
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style='width: 25%'>Request by</td>
-                        <td>: $ticketDetails->name</td>
-                    </tr>
-                    <tr>
-                        <td>Request Date</td>
-                        <td>: $ticketDetails->request_date</td>
-                    </tr>
-                    <tr>
-                        <td>Start Date</td>
-                        <td>: $ticketDetails->start_date</td>
-                    </tr>
-                    <tr>
-                        <td>From Date</td>
-                        <td>: $ticketDetails->end_date</td>
-                    </tr>
-                    <tr>
-                        <td>Description</td>
-                        <td>: $ticketDetails->request_desc</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class='table-responsive'>
-        <table class='table table-vcenter card-table'>
-            <thead>
-                <tr>
-                    <th>Asset</th>
-                    <th>Qty</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>";
-
-        foreach ($ticketItems as $ticketItem) {
-
-        echo "<tr>
-                <td>$ticketItem->name</td>
-                <td>$ticketItem->qty</td>
-                <td>Availaible</td>
-            </tr>";
-        }
-
-        echo "</tbody>
-        </table>
-    </div>";
-
-
-    }
-
-
-
-    public function assetListAssigment(Request $request, $id)
+    public function assetListAssignment($id)
     {
         $assetList = DB::table('tickets')
                         ->join('ticket_items', 'tickets.id', 'ticket_items.ticket_id')
                         ->join('assets', 'ticket_items.asset_id', 'assets.id')
                         ->where('tickets.id', $id)
-                        ->select('ticket_items.qty', 'assets.name', 'assets.id as asset_id')
+                        ->select('ticket_items.ticket_id','ticket_items.qty', 'assets.name', 'assets.id as asset_id')
                         ->get();
 
-        if ($request->ajax()) {
+
             return Response::json([
                 'data' => $assetList
             ]);
-        }
+
     }
 
-    public function getUnitList(Request $request, $id)
+    public function getUnitList($asset_id, $ticket_id)
     {
         $getItems = DB::table('ticket_items')
-                    ->leftJoin('assets', 'ticket_items.asset_id', 'assets.id')
-                    ->leftJoin('units', 'assets.id', 'units.asset_id')
-                    ->where('units.asset_id', $id)
+                    ->join('assets', 'ticket_items.asset_id', 'assets.id')
+                    ->join('units', 'assets.id', 'units.asset_id')
+                    ->where('ticket_items.asset_id', $asset_id)
+                    ->where('ticket_items.ticket_id', $ticket_id)
                     ->where('units.is_available', '1')
                     ->get();
 
-        if ($request->ajax()) {
+
             return Response::json([
                 'data' => $getItems
             ]);
-        }
+
 
     }
 

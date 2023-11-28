@@ -191,7 +191,7 @@
             <div class="container-xl">
                 <ul class="navbar-nav">
                     <li class="nav-item {{ Request::routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('admin.dashboard') }}">
+                        <a class="nav-link" href="{{ route('admin.dashboard') }}" wire:navigate>
                             <span
                                 class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
@@ -229,10 +229,13 @@
                             </span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item {{ (request()->segment(3) == 'assets') ? 'active' : '' }}" href="{{ route('admin.assetmanagement.assets.index') }}">
+                            <a class="dropdown-item {{ (request()->segment(3) == 'assets') ? 'active' : '' }}" href="{{ route('admin.assetmanagement.assets.index') }}" wire:navigate>
                                 Assets
                             </a>
-                            <a class="dropdown-item {{ (request()->segment(3) == 'categories') ? 'active' : '' }}" href="{{ route('admin.assetmanagement.categories.index') }}">
+                            <a class="dropdown-item {{ (request()->segment(3) == 'units') ? 'active' : '' }}" href="{{ route('admin.assetmanagement.units.index', 'all') }}" wire:navigate>
+                                Units
+                            </a>
+                            <a class="dropdown-item {{ (request()->segment(3) == 'categories') ? 'active' : '' }}" href="{{ route('admin.assetmanagement.categories.index') }}" wire:navigate>
                                 Categories
                             </a>
                         </div>
@@ -260,10 +263,10 @@
                             </span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item {{ (request()->segment(3) == 'tickets') ? 'active' : '' }}" href="{{ route('admin.assignment.ticket.index') }}">
+                            <a class="dropdown-item {{ (request()->segment(3) == 'tickets') ? 'active' : '' }}" href="{{ route('admin.assignment.ticket.index') }}" wire:navigate>
                                 Tickets
                             </a>
-                            <a class="dropdown-item {{ (request()->segment(3) == 'assignments') ? 'active' : '' }}" href="{{ route('admin.assignment.assignments.index') }}">
+                            <a class="dropdown-item {{ (request()->segment(3) == 'assignments') ? 'active' : '' }}" href="{{ route('admin.assignment.assignments.index') }}" wire:navigate>
                                 Assignment
                             </a>
                         </div>

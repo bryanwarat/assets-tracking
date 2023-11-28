@@ -42,4 +42,13 @@ class Asset extends Model
     {
         return $this->hasMany(Unit::class);
     }
+
+    public function scopeSearch($query, $value){
+
+        $query->where('name', 'like', "%{$value}%")
+            ->orWhere('total_unit', 'like', "%{$value}%")
+            ->orWhere('description', 'like', "%{$value}%")
+            // ->orWhere('category_name', 'like', "%{$value}%")
+            ;
+    }
 }
